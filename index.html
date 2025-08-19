@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML2CANVAS</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        .container {
+            text-align: center;
+        }
+
+        #capture3 {
+            background: url(tamplate.jpg);
+            height: 520px;
+            width: 520px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            position: relative;
+        }
+
+        #imagePreview {
+            position: absolute;
+            left: 49%;
+            top: 57%;
+            transform: translate(-50%, -50%);
+            height: 39%;
+            width: 39%;
+            border: 4px solid #000;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        #imagePreview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        #value {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 22px;
+            font-weight: bold;
+            color: black;
+        }
+
+        #value {
+            background: #900;
+            position: absolute;
+            top: 77%;
+            width: 40%;
+            color: #000;
+            padding: 1%;
+        }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <input type="text" id="name" placeholder="Enter Name">
+        <input type="file" id="imageUpload" accept="image/*">
+        <button type="submit" onclick="apply()">Apply</button>
+
+        <div id="capture3">
+            <div id="value"></div>
+            <div id="imagePreview"></div>
+            <div id="value"></div>
+        </div>
+
+        <button id="downloadButton">Okay</button>
+    </div>
+
+    <script>
+        // Image Upload Preview
+        document.getElementById('imageUpload').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const imagePreview = document.getElementById('imagePreview');
+                    imagePreview.innerHTML = ''; // Clear previous image
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.alt = 'Uploaded Image';
+                    imagePreview.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Apply name text
+        function apply() {
+            document.getElementById("value").innerHTML = document.getElementById("name").value;
+        }
+
+        // Capture & Download
+        const elementToCapture = document.getElementById("capture3");
+        const downloadButton = document.getElementById("downloadButton");
+
+        downloadButton.addEventListener("click", function () {
+            html2canvas(elementToCapture, {
+                allowTaint: true,
+                useCORS: true,
+            }).then((canvas) => {
+                const downloadLink = document.createElement("a");
+                downloadLink.href = canvas.toDataURL("image/png");
+                downloadLink.download = "screenshot.png";
+                downloadLink.click();
+            });
+        });
+    </script>
+</body>
+
+</html>
