@@ -2,80 +2,172 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jamuna TV PhotoCard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jamuna TV PhotoCard</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f4f4f4;
+      padding: 10px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 400px;
+      aspect-ratio: 1 / 1; /* always square */
+      background: #B7000C;
+      position: relative;
+      margin: 0 auto;
+      overflow: hidden;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    #imagePreview img {
+      width: 100%;
+      height: auto;
+      max-height: 55%;
+      object-fit: cover;
+    }
+
+    #value {
+      margin: 0;
+      padding: 6px;
+      color: #fff;
+      font-size: clamp(14px, 5vw, 22px); /* responsive font */
+      text-align: center;
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .footer {
+      position: absolute;
+      background: linear-gradient(#D70007, #8D0000);
+      bottom: 40px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      padding: 5px;
+    }
+
+    .footer img {
+      width: 20%;
+      max-width: 70px;
+    }
+
+    .footer .bread {
+      font-size: clamp(12px, 3vw, 16px);
+      color: #ffffffb7;
+      margin-left: 8px;
+      flex: 1;
+    }
+
+    .bread span {
+      font-size: clamp(16px, 4vw, 22px);
+    }
+
+    .fb {
+      margin-left: auto;
+      margin-right: 10px;
+    }
+
+    .fb img {
+      width: clamp(16px, 4vw, 22px);
+    }
+
+    .ad {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+    }
+
+    .ad img {
+      width: 100%;
+      height: auto;
+    }
+
+    input,
+    button {
+      margin: 5px;
+      padding: 6px 10px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 500px) {
+      .card {
+        max-width: 90%;
+      }
+    }
+  </style>
 </head>
 
 <body>
-    <style>
-        .card {
-            height: 400px;
-            width: 400px;
-            background: #B7000C;
-            position: relative;
-            margin: 0;
-            padding: 0;
-        }
 
-        .card img {
-            width: 100%;
-        }
+  <input type="text" id="headline" placeholder="Enter headline">
+  <input type="file" id="imageUpload" accept="image/*">
+  <button onclick="apply()">Apply</button>
 
-        .footer {
-            position: absolute;
-            background: linear-gradient(#D70007, #8D0000);
-            bottom: 10%;
-            width: 100%;
-        }
-
-        .footer img {
-            width: 25%;
-            padding-left: 3%;
-
-        }
-
-        .footer .bread {
-            display: inline-block;
-            padding-left: 2.4%;
-            font-size: 16px;
-            color: #ffffffb7;
-        }
-
-        .bread span {
-            font-size: 22px;
-        }
-        .fb{
-            display: inline-block;
-            
-        }
-
-        .fb img {
-            width: 22px;
-        }
-
-        .ad {
-            position: absolute;
-            bottom: 0;
-            margin: 0;
-            padding: 0;
-        }
-
-        .ad img {
-            bottom: 0;
-        }
-    </style>
-    <div class="card">
-        <img src="redflag.webp" alt="">
-        <div class="footer">
-            <img src="logo.png" alt="">
-            <div class="bread"><span>&#129170;</span> Jamuna TV</div>
-            <div class="fb"><img src="facebook-new.png" alt=""></div>
-        </div>
-        <div class="ad">
-            <img src="ad.png" alt="">
-        </div>
+  <div class="card" id="capture3">
+    <div id="imagePreview"></div>
+    <h3 id="value">ট্রাম্প পুতিন বৈঠক</h3>
+    <div class="footer">
+      <img src="logo.png" alt="">
+      <div class="bread"><span>&#129170;</span> Jamuna TV</div>
+      <div class="fb"><img src="facebook-new.png" alt=""></div>
     </div>
+    <div class="ad">
+      <img src="ad.png" alt="">
+    </div>
+  </div>
+
+  <button id="downloadButton">Download</button>
+
+  <script>
+    // Image Upload Preview
+    document.getElementById('imageUpload').addEventListener('change', function (event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const imagePreview = document.getElementById('imagePreview');
+          imagePreview.innerHTML = ''; // Clear previous image
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.alt = 'Uploaded Image';
+          imagePreview.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Apply headline text
+    function apply() {
+      const text = document.getElementById("headline").value;
+      document.getElementById("value").innerHTML = text ? text : "ট্রাম্প পুতিন বৈঠক";
+    }
+
+    // Capture & Download
+    const elementToCapture = document.getElementById("capture3");
+    const downloadButton = document.getElementById("downloadButton");
+
+    downloadButton.addEventListener("click", function () {
+      html2canvas(elementToCapture, {
+        allowTaint: true,
+        useCORS: true,
+        backgroundColor: null
+      }).then((canvas) => {
+        const downloadLink = document.createElement("a");
+        downloadLink.href = canvas.toDataURL("image/png");
+        downloadLink.download = "screenshot.png";
+        downloadLink.click();
+      });
+    });
+  </script>
+
 </body>
 
 </html>
