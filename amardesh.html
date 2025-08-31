@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Card Editor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans Bengali', sans-serif;
+            text-align: center;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .card {
+            max-width: 500px;
+            width: 100%;
+            background: #e9efec;
+            margin: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .header {
+            padding: 8px;
+            font-weight: bold;
+            font-size: clamp(16px, 4vw, 22px);
+            text-align: center;
+        }
+
+        .header span {
+            color: red;
+            font-size: clamp(16px, 4vw, 22px);
+        }
+
+        #previewImage {
+            width: 100%;
+            height: auto;
+            max-height: 280px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .headline {
+            padding: 10px;
+            font-size: clamp(14px, 4vw, 20px);
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .subtext {
+            font-size: clamp(12px, 3vw, 16px);
+            text-align: center;
+            padding-bottom: 5px;
+            color: #b7000c;
+        }
+
+        .footer {
+            background: #007a3d;
+            color: white;
+            font-size: clamp(10px, 2.5vw, 14px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 8px;
+        }
+
+        .controls {
+            margin: 10px auto;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        input,
+        textarea,
+        button {
+            padding: 6px;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        button {
+            background: #b7000c;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background: #900000;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="controls">
+        <input type="file" id="uploadImage" accept="image/*">
+        <input type="text" id="headlineInput" placeholder="শিরোনাম লিখুন">
+        <input type="text" id="subtextInput" placeholder="সাবটেক্সট লিখুন">
+        <button id="apply">Apply</button>
+        <button id="download">Download</button>
+    </div>
+
+    <!-- Card -->
+    <div class="card" id="newsCard">
+        <div class="header" contenteditable="true">আমার <span>▉</span> দেশ</div>
+        <img id="previewImage" src="https://via.placeholder.com/500x280.png?text=Upload+Image" alt="Preview">
+        <div class="headline" id="headline" contenteditable="true">চর দখল করায় বিএনপির ২ নেতাকে ‘কো’পা’ন বাসিন্দারা
+        </div>
+        <div class="subtext" id="subtext" contenteditable="true">বিস্তারিত কমেন্টে</div>
+        <div class="footer">
+            <div>dailyamardesh.com</div>
+            <div>২৩ আগস্ট ২০২৫</div>
+        </div>
+    </div>
+
+    <script>
+        const uploadImage = document.getElementById("uploadImage");
+        const previewImage = document.getElementById("previewImage");
+        const headlineInput = document.getElementById("headlineInput");
+        const subtextInput = document.getElementById("subtextInput");
+        const headline = document.getElementById("headline");
+        const subtext = document.getElementById("subtext");
+        const apply = document.getElementById("apply");
+
+        uploadImage.addEventListener("change", (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    previewImage.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        apply.addEventListener("click", () => {
+            if (headlineInput.value) headline.innerText = headlineInput.value;
+            if (subtextInput.value) subtext.innerText = subtextInput.value;
+        });
+
+        document.getElementById("download").addEventListener("click", () => {
+            html2canvas(document.getElementById("newsCard"), {
+                allowTaint: true,
+                useCORS: true,
+                backgroundColor: null
+            }).then(canvas => {
+                const link = document.createElement("a");
+                link.href = canvas.toDataURL("image/png");
+                link.download = "news-card.png";
+                link.click();
+            });
+        });
+    </script>
+</body>
+
+</html>
